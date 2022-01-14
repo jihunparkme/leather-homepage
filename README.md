@@ -29,20 +29,28 @@
 
   - Thymeleaf / Javascript / JQuery
 
-- admin 로그인 및 권한 (Spring Security)
-- Product List (Infinite Scrolling)
-- Post
-- Guest book
-- Q&A
-- About
-- Main (Product 출력)
-- 기능
-  - Thymleaf
-    - 템플릿 레이아웃 적용
-    - API 용과 View Resolver 용 분리. accept 로 구분
-  - 데이터 검증 및 오류 메시지 처리 (bean validation)
-  - 로그인 쿠키, 세션, 필터, 인터셉터
-  - 예외 처리와 오류 메시지
+
+---
+
+**기능**
+
+- Thymleaf
+  - 템플릿 레이아웃 적용
+- Controller
+  - API 용과 View Resolver 용 분리. (accept 로 구분)
+- Exception
+  - 서블릿 예외 처리
+  - 스프링 부트 오류 페이지
+  - API 예외 처리
+- 로그인
+  - 스프링 인터셉터 (로그인 세션 체크)
+  - 쿠키에 아이디 저장
+- Data Validation
+  - 타입 에러 메시지 생성
+  - Bean Validation
+- 파일 업로드
+
+---
 
 ## Member
 
@@ -87,6 +95,7 @@ CREATE TABLE LOGIN_LOG (
   - 아이디 저장 기능(쿠키)
   - setMaxInactiveInterval > 세션 설정(24시간)
   - 비밀번호 찾기 (가입 시 입력 이메일로 임시 PW 전송 및 임시로 PW 로 수정)
+  - admin 로그인 및 권한 (Spring Security)
 - Sign in `POST`
   - 비밀번호 숫자/영문 포함 10자 이상
 - View (개인정보 확인) `POST`
@@ -297,6 +306,8 @@ CREATE TABLE GUEST_BOOK (
 - Edit 버튼
   - 접근 시 작성한 비밀번호 입력
   - admin 권한의 경우 바로 접근
+
+## Q&A
 
 ## ETC
 
