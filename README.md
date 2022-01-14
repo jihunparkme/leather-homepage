@@ -27,7 +27,7 @@
 
 - Front-End
 
-  - Thymeleaf / Javascript
+  - Thymeleaf / Javascript / JQuery
 
 - admin 로그인 및 권한 (Spring Security)
 - Product List (Infinite Scrolling)
@@ -47,15 +47,32 @@
 ## Member
 
 ```mysql
-CREATE TABLE MEMBER (
-	member_id int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    NAME varchar(20) NOT NULL,
-    E-MAIL varchar(50) NOT NULL,
-    PASSWORD varchar(100) NOT NULL,
-    CONTACT varchar(20) NOT NULL,
-    AUTH varchar(20) NOT NULL default 'MEMBER',
-    birthday DATETIME NOT NULL
-)
+-- 사용자
+ALTER TABLE `MEMBER`
+	DROP PRIMARY KEY;
+
+DROP TABLE IF EXISTS `MEMBER` RESTRICT;
+
+CREATE TABLE `MEMBER` (
+	`member_id` INT          NOT NULL, -- 사용자 ID
+	`user_id`   VARCHAR(20)  NOT NULL, -- 아이디
+	`password`  VARCHAR(100) NOT NULL, -- 비밀번호
+	`name`      VARCHAR(20)  NOT NULL, -- 이름
+	`email`     VARCHAR(20)  NOT NULL, -- email
+	`auth`      VARCHAR(10)  NOT NULL DEFAULT MEMBER -- 권한
+);
+
+ALTER TABLE `MEMBER`
+	ADD CONSTRAINT `PK_MEMBER` -- 사용자 기본키
+		PRIMARY KEY (
+			`member_id` -- 사용자 ID
+		);
+
+ALTER TABLE `MEMBER`
+	MODIFY COLUMN `member_id` INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `MEMBER`
+	AUTO_INCREMENT = 1;
 '''
 CREATE TABLE LOGIN_LOG (
     LOG_ID int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
