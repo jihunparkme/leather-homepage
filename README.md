@@ -1,21 +1,14 @@
 # leather-homepage
 
-
-
-- https://bootstrapmade.com/sailor-free-bootstrap-theme/
-
-  - 바닥글 크레딧 링크 제거 불가
-
 - TDD
 
 - Back-End
 
   - Kotlin
-  - Spring Boot / Spring MVC / ~~Spring Data JPA~~
-  - ~~JPA~~ / ~~Querydsl~~ / JOOQ
+  - Spring Boot / Spring MVC / Spring Data JPA
+  - JPA / Querydsl / ~~JOOQ~~
   - Mockito, Spock
   - Gradle
-
   - Redis
 
 - DevOps
@@ -26,13 +19,11 @@
   - AWS-EC2
 
 - Front-End
-
   - Thymeleaf / Javascript / JQuery
-
 
 ---
 
-**기능**
+**적용 기능**
 
 - Thymleaf
   - 템플릿 레이아웃 적용
@@ -54,7 +45,7 @@
 
 ## Member
 
-```mysql
+```sql
 -- 사용자
 ALTER TABLE `MEMBER`
 	DROP PRIMARY KEY;
@@ -92,10 +83,14 @@ CREATE TABLE LOGIN_LOG (
 ```
 
 - Login `POST`
+
   - 아이디 저장 기능(쿠키)
   - setMaxInactiveInterval > 세션 설정(24시간)
-  - 비밀번호 찾기 (가입 시 입력 이메일로 임시 PW 전송 및 임시로 PW 로 수정)
-  - admin 로그인 및 권한 (Spring Security)
+  - 아이디 찾기(가입 시 작성한 이메일 입력 시 아이디 앞부분 보여주기)
+  - 비밀번호 찾기 (가입 시 입력 이메일로 임시 PW 전송 및 DB는 임시 PW 로 수정)
+  - admin 로그인 및 권한 관련 (Spring Security)
+  - 카카오로 시작하기 기능
+
 - Sign in `POST`
   - 비밀번호 숫자/영문 포함 10자 이상
 - View (개인정보 확인) `POST`
@@ -108,26 +103,26 @@ CREATE TABLE LOGIN_LOG (
 
 ```mysql
 CREATE TABLE PRODUCT (
-    PRODUCT_ID int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    TITLE varchar(50) NOT NULL,
-    CONTENTS varchar(MAX) NOT NULL,
-    THUMBNAIL_ID int(1) NULL,
-    CATEGORY_ID int(1) NOT NULL, -- foreign key (P:C - N:1)
+    product_id int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title varchar(50) NOT NULL,
+    contents varchar(MAX) NOT NULL,
+    thumbnail_id int(1) NULL,
+    category_id int(1) NOT NULL, -- foreign key (P:C - N:1)
     hits int(1) NOT NULL default 0,
     delete_yn varchar(1) NOT NULL,
     dekete_date_time DATETIME NOT NULL,
-    CREATED_DATE_TIME DATETIME NOT NULL,
-    MODIFIED_DATE_TIME DATETIME NULL
+    created_date_time DATETIME NOT NULL,
+    modified_date_time DATETIME NULL
 )
 
 CREATE TABLE PRODUCT_ATTACHMENTS (
-    ATTACHMENTS_ID int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    PRODUCT_ID int(1) NOT NULL, -- foreign key (A:P - N:1)
-    ORIG_FILENAME varchar(100) NOT NULL, -- 이건 알아보고 삭제할지 판단
-    FILE_NAME varchar(100) NOT NULL, -- UUID
-    FILE_PATH varchar(100) NOT NULL,
-    CREATED_DATE_TIME DATETIME NOT NULL,
-    MODIFIED_DATE_TIME DATETIME NULL
+    attachments_id int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    product_id int(1) NOT NULL, -- foreign key (A:P - N:1)
+    orig_filename varchar(100) NOT NULL, -- 이건 알아보고 삭제할지 판단
+    file_name varchar(100) NOT NULL, -- UUID
+    file_path varchar(100) NOT NULL,
+    created_date_time DATETIME NOT NULL,
+    modified_date_time DATETIME NULL
 )
 
 CREATE TABLE PRODUCT_CATEGORY (
@@ -146,12 +141,77 @@ CREATE TABLE PRODUCT_CATEGORY (
 - New & Edit `POST`
   - CKeditor Library
   - 이미지 업로드
+  - 사진 수정 시, 기존 첨부 리스트와 삭제된 첨부 리스트 체크
   - 접근 시 ADMIN 권한 체크 (서버단에서 ROLE 확인)
   - 수정 시 삭제 버튼 활성
 
 ---
 
+## Guest book
+
+- 후기
+
+```sql
+CREATE TABLE GUEST_BOOK (
+    guest_book_id int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   	name varchar(50) NOT NULL,
+  	password varchar(50) NOT NULL,
+    contents varchar(MAX) NOT NULL,
+    created_date_time DATETIME NOT NULL,
+    modified_date_time DATETIME NULL
+)
+```
+
+- New
+  - layout 으로
+- Edit 버튼
+  - 접근 시 작성한 비밀번호 입력
+  - admin 권한의 경우 바로 접근
+
+방명록 남기면 관리자에게 메일/카카오톡 알림
+
+## Contact Us
+
+문의하기
+문의가 접수되면 메일/카카오톡으로 안내.
+
+```sql
+CREATE TABLE CONTACT_US (
+    contact_us int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   	name varchar(50) NOT NULL,
+    email varchar(50) NULL,
+    phone_number varchar(15) NOT NULL,
+  	title varchar(50) NOT NULL,
+    contents varchar(MAX) NOT NULL,
+    created_date_time DATETIME NOT NULL,
+    modified_date_time DATETIME NULL
+)
+```
+
+## ETC
+
+**database backup**
+
+- DB 데이터 백업 스케쥴러?(https://server-talk.tistory.com/30)
+
+**hosting**
+
+- AWS EC2
+
+**네이버 예약 기능**
+
+> Reference
+
+- https://bootstrapmade.com/sailor-free-bootstrap-theme/
+- https://yhworkshop.com/
+
+---
+
+# Pending
+
 ## Post
+
+블로그
 
 ```mysql
 CREATE TABLE POST (
@@ -214,6 +274,8 @@ CREATE TABLE POST_TAG (
 
 ## Comments
 
+댓글
+
 ```sql
 CREATE TABLE POST_COMMENTS (
     COMMENTS_ID int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -246,6 +308,8 @@ CREATE TABLE POST_COMMENTS_REPLY (
   - 저장 시 new와 reply 구분해서 저장 분리
 
 ## REVIEW
+
+후기
 
 ```mysql
 CREATE TABLE REVIEW (
@@ -285,48 +349,3 @@ https://freehoon.tistory.com/121?category=735500
 - New & Edit
   - 이름, 비밀번호, Comment 입력
   - 비밀글 체크박스
-
-## Guest book
-
-- (QNA_ID, NAME, PASSWORD, CONTENTS)
-
-```sql
-CREATE TABLE GUEST_BOOK (
-    GUEST_BOOK_ID int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-   	NAME varchar(50) NOT NULL,
-  	PASSWORD varchar(50) NOT NULL,
-    CONTENTS varchar(MAX) NOT NULL,
-    CREATED_DATE_TIME DATETIME NOT NULL,
-    MODIFIED_DATE_TIME DATETIME NULL
-)
-```
-
-- New
-  - layout 으로
-- Edit 버튼
-  - 접근 시 작성한 비밀번호 입력
-  - admin 권한의 경우 바로 접근
-
-## Q&A
-
-## ETC
-
-매일 DB 데이터 백업
-
-댓글이나 방명록 Q&A 에 글 달리면 자동 메일 발송
-
----
-
-- int, datetime, nvarchar,
-
----
-
-네이버 예약
-
-[[hosting]]
-
-- cafe24, AWS EC2
-
-[[database backup]]
-
-- 'https://server-talk.tistory.com/30'
