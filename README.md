@@ -96,8 +96,14 @@ CREATE TABLE LOGIN_LOG (
 - View (개인정보 확인) `POST`
   - 접근 시 로그인 세션 체크
 - Edit (개인정보 변경) `POST`
+
   - 접근 시 로그인 세션 체크
   - 저장 시 현재 비밀번호 확인 (본인 확인 목적)
+
+- 관리자 전용 페이지
+  - 상품 등록/수정/삭제
+  - 후기 삭제
+  - ~~회원 관리(수정/삭제)~~
 
 ## Product
 
@@ -188,7 +194,14 @@ CREATE TABLE CONTACT_US (
 )
 ```
 
+## About
+
+- html 로
+- About 관리 페이지?
+
 ## ETC
+
+**Jacoco Code Coverage 확인**
 
 **database backup**
 
