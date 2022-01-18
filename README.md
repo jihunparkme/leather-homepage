@@ -107,6 +107,26 @@ CREATE TABLE LOGIN_LOG (
 
 ## Product
 
+```java
+@Data
+public class Item {
+    private Long id;
+    private String itemName;
+    private UploadFile attachFile;
+    private List<UploadFile> imageFiles;
+}
+
+@Data
+public class UploadFile {
+    private String uploadFileName;
+    private String storeFileName;
+    public UploadFile(String uploadFileName, String storeFileName) {
+        this.uploadFileName = uploadFileName;
+        this.storeFileName = storeFileName;
+    }
+}
+```
+
 ```mysql
 CREATE TABLE PRODUCT (
     product_id int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
