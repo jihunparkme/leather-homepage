@@ -45,20 +45,24 @@
 
 ## Member
 
-```sql
--- 사용자
+```mysql
+'''
+사용자
+'''
 ALTER TABLE `MEMBER`
 	DROP PRIMARY KEY;
 
 DROP TABLE IF EXISTS `MEMBER` RESTRICT;
 
 CREATE TABLE `MEMBER` (
-	`member_id` INT          NOT NULL, -- 사용자 ID
-	`user_id`   VARCHAR(20)  NOT NULL, -- 아이디
-	`password`  VARCHAR(100) NOT NULL, -- 비밀번호
-	`name`      VARCHAR(20)  NOT NULL, -- 이름
-	`email`     VARCHAR(20)  NOT NULL, -- email
-	`auth`      VARCHAR(10)  NOT NULL DEFAULT MEMBER -- 권한
+	`member_id`        INT          NOT NULL, -- 사용자 ID
+	`user_id`          VARCHAR(30)  NOT NULL, -- 아이디
+	`password`         VARCHAR(100) NOT NULL, -- 비밀번호
+	`name`             VARCHAR(30)  NOT NULL, -- 이름
+	`email`            VARCHAR(50)  NOT NULL, -- email
+	`auth`             VARCHAR(10)  NOT NULL DEFAULT MEMBER, -- 권한
+	`create_date_time` DATETIME     NOT NULL, -- 등록일
+	`update_date_time` DATETIME     NULL      -- 수정일
 );
 
 ALTER TABLE `MEMBER`
@@ -72,6 +76,7 @@ ALTER TABLE `MEMBER`
 
 ALTER TABLE `MEMBER`
 	AUTO_INCREMENT = 1;
+
 '''
 CREATE TABLE LOGIN_LOG (
     LOG_ID int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -128,35 +133,122 @@ public class UploadFile {
 ```
 
 ```mysql
-CREATE TABLE PRODUCT (
-    product_id int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    title varchar(50) NOT NULL,
-    contents varchar(MAX) NOT NULL,
-    thumbnail_id int(1) NULL,
-    category_id int(1) NOT NULL, -- foreign key (P:C - N:1)
-    hits int(1) NOT NULL default 0,
-    delete_yn varchar(1) NOT NULL,
-    dekete_date_time DATETIME NOT NULL,
-    created_date_time DATETIME NOT NULL,
-    modified_date_time DATETIME NULL
-)
+'''
+상품
+'''
+ALTER TABLE `PRODUCT`
+	DROP FOREIGN KEY `FK_PRODUCT_CATEGORY_TO_PRODUCT`; -- 상품 카테고리 -> 상품
 
-CREATE TABLE PRODUCT_ATTACHMENTS (
-    attachments_id int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    product_id int(1) NOT NULL, -- foreign key (A:P - N:1)
-    orig_filename varchar(100) NOT NULL, -- 이건 알아보고 삭제할지 판단
-    file_name varchar(100) NOT NULL, -- UUID
-    file_path varchar(100) NOT NULL,
-    created_date_time DATETIME NOT NULL,
-    modified_date_time DATETIME NULL
-)
+ALTER TABLE `PRODUCT`
+	DROP PRIMARY KEY; 
 
-CREATE TABLE PRODUCT_CATEGORY (
-    category_id int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    title varchar(20) NOT NULL,
-    order_no int(1) NOT NULL, -- 관리자 페이지에서 드래그로 우선순위 정하는거 확인
-    category_use_yn varchar(1) NOT NULL
-)
+DROP TABLE IF EXISTS `PRODUCT` RESTRICT;
+
+CREATE TABLE `PRODUCT` (
+	`product_id`         INT          NOT NULL, -- 상품 ID
+	`category_id`        INT          NOT NULL, -- 카테고리 ID
+	`name`               VARCHAR(100) NOT NULL, -- 상품명
+	`contents`           VARCHAR(MAX) NULL,     -- 상품설명
+	`hits`               INT          NOT NULL DEFAULT 0, -- 조회수
+	`delete_yn`          char(1)      NOT NULL DEFAULT N, -- 삭제여부
+	`delete_date_time`   DATETIME     NULL,     -- 삭제일
+	`create_date_time`   DATETIME     NOT NULL, -- 등록일
+	`create_member_name` VARCHAR(30)  NOT NULL, -- 등록자
+	`update_date_time`   DATETIME     NULL,     -- 수정일
+	`update_member_name` VARCHAR(30)  NULL      -- 수정자
+);
+
+ALTER TABLE `PRODUCT`
+	ADD CONSTRAINT `PK_PRODUCT` -- 상품 기본키
+		PRIMARY KEY (
+			`product_id` -- 상품 ID
+		);
+
+ALTER TABLE `PRODUCT`
+	MODIFY COLUMN `product_id` INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `PRODUCT`
+	AUTO_INCREMENT = 1;
+
+ALTER TABLE `PRODUCT`
+	ADD CONSTRAINT `FK_PRODUCT_CATEGORY_TO_PRODUCT` -- 상품 카테고리 -> 상품
+		FOREIGN KEY (
+			`category_id` -- 카테고리 ID
+		)
+		REFERENCES `PRODUCT_CATEGORY` ( -- 상품 카테고리
+			`category_id` -- 카테고리 ID
+		);
+		
+		
+'''
+상품 카테고리
+'''	
+ALTER TABLE `PRODUCT_CATEGORY`
+	DROP PRIMARY KEY; -- 상품 카테고리 기본키
+
+DROP TABLE IF EXISTS `PRODUCT_CATEGORY` RESTRICT;
+
+CREATE TABLE `PRODUCT_CATEGORY` (
+	`category_id`     INT                NOT NULL, -- 카테고리 ID
+	`title`           <데이터 타입 없음> NOT NULL, -- 카테고리명
+	`order_no`        <데이터 타입 없음> NULL,     -- 우선순위
+	`category_use_yn` <데이터 타입 없음> NULL     DEFAULT N -- 사용여부
+);
+
+ALTER TABLE `PRODUCT_CATEGORY`
+	ADD CONSTRAINT `PK_PRODUCT_CATEGORY` -- 상품 카테고리 기본키
+		PRIMARY KEY (
+			`category_id` -- 카테고리 ID
+		);
+
+ALTER TABLE `PRODUCT_CATEGORY`
+	MODIFY COLUMN `category_id` INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `PRODUCT_CATEGORY`
+	AUTO_INCREMENT = 1;
+	
+	
+'''
+상품 첨부 파일
+'''
+ALTER TABLE `PRODUCT_UPLOAD_FILE`
+	DROP FOREIGN KEY `FK_PRODUCT_TO_PRODUCT_UPLOAD_FILE`; -- 상품 -> 상품 첨부 파일
+
+ALTER TABLE `PRODUCT_UPLOAD_FILE`
+	DROP PRIMARY KEY; -- 상품 첨부 파일 기본키
+
+DROP TABLE IF EXISTS `PRODUCT_UPLOAD_FILE` RESTRICT;
+
+CREATE TABLE `PRODUCT_UPLOAD_FILE` (
+	`file_id`          INT          NOT NULL, -- 파일 ID
+	`product_id`       INT          NOT NULL, -- 상품 ID
+	`upload_file_name` VARCHAR(100) NOT NULL, -- 업로드 파일명
+	`store_file_name`  VARCHAR(100) NOT NULL, -- 저장 파일명
+	`thumbnail_yn`     char(1)      NOT NULL DEFAULT N, -- 썸네일 여부
+	`create_date_time` DATETIME     NOT NULL, -- 등록일
+	`update_date_time` DATETIME     NULL      -- 수정일
+);
+
+ALTER TABLE `PRODUCT_UPLOAD_FILE`
+	ADD CONSTRAINT `PK_PRODUCT_UPLOAD_FILE` -- 상품 첨부 파일 기본키
+		PRIMARY KEY (
+			`file_id` -- 파일 ID
+		);
+
+ALTER TABLE `PRODUCT_UPLOAD_FILE`
+	MODIFY COLUMN `file_id` INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `PRODUCT_UPLOAD_FILE`
+	AUTO_INCREMENT = 1;
+
+ALTER TABLE `PRODUCT_UPLOAD_FILE`
+	ADD CONSTRAINT `FK_PRODUCT_TO_PRODUCT_UPLOAD_FILE` -- 상품 -> 상품 첨부 파일
+		FOREIGN KEY (
+			`product_id` -- 상품 ID
+		)
+		REFERENCES `PRODUCT` ( -- 상품
+			`product_id` -- 상품 ID
+		);
 ```
 
 - List
@@ -178,14 +270,31 @@ CREATE TABLE PRODUCT_CATEGORY (
 - 후기
 
 ```sql
-CREATE TABLE GUEST_BOOK (
-    guest_book_id int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-   	name varchar(50) NOT NULL,
-  	password varchar(50) NOT NULL,
-    contents varchar(MAX) NOT NULL,
-    created_date_time DATETIME NOT NULL,
-    modified_date_time DATETIME NULL
-)
+ALTER TABLE `GUEST_BOOK`
+	DROP PRIMARY KEY; -- 후기 기본키
+
+DROP TABLE IF EXISTS `GUEST_BOOK` RESTRICT;
+
+CREATE TABLE `GUEST_BOOK` (
+	`guest_book_id`    INT           NOT NULL, -- 후기 ID
+	`name`             VARCHAR(30)   NOT NULL, -- 이름
+	`password`         VARCHAR(100)  NOT NULL, -- 비밀번호
+	`contents`         VARCHAR(5000) NOT NULL, -- 내용
+	`create_date_time` DATETIME      NOT NULL, -- 등록일
+	`update_date_time` DATETIME      NULL      -- 수정일
+);
+
+ALTER TABLE `GUEST_BOOK`
+	ADD CONSTRAINT `PK_GUEST_BOOK` -- 후기 기본키
+		PRIMARY KEY (
+			`guest_book_id` -- 후기 ID
+		);
+
+ALTER TABLE `GUEST_BOOK`
+	MODIFY COLUMN `guest_book_id` INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `GUEST_BOOK`
+	AUTO_INCREMENT = 1;
 ```
 
 - New
@@ -202,16 +311,33 @@ CREATE TABLE GUEST_BOOK (
 문의가 접수되면 메일/카카오톡으로 안내.
 
 ```sql
-CREATE TABLE CONTACT_US (
-    contact_us int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-   	name varchar(50) NOT NULL,
-    email varchar(50) NULL,
-    phone_number varchar(15) NOT NULL,
-  	title varchar(50) NOT NULL,
-    contents varchar(MAX) NOT NULL,
-    created_date_time DATETIME NOT NULL,
-    modified_date_time DATETIME NULL
-)
+ALTER TABLE `CONTACT_US`
+	DROP PRIMARY KEY; -- 문의하기 기본키
+
+DROP TABLE IF EXISTS `CONTACT_US` RESTRICT;
+
+CREATE TABLE `CONTACT_US` (
+	`contact_us_id`    INT          NOT NULL, -- 문의하기 ID
+	`name`             VARCHAR(30)  NOT NULL, -- 이름
+	`email`            VARCHAR(50)  NULL,     -- 이메일
+	`phone_number`     VARCHAR(20)  NOT NULL, -- 전화번호
+	`title`            VARCHAR(100) NOT NULL, -- 제목
+	`contents`         VARCHAR(MAX) NOT NULL, -- 내용
+	`create_date_time` DATETIME     NOT NULL, -- 등록일
+	`update_date_time` DATETIME     NULL      -- 수정일
+);
+
+ALTER TABLE `CONTACT_US`
+	ADD CONSTRAINT `PK_CONTACT_US` -- 문의하기 기본키
+		PRIMARY KEY (
+			`contact_us_id` -- 문의하기 ID
+		);
+
+ALTER TABLE `CONTACT_US`
+	MODIFY COLUMN `contact_us_id` INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `CONTACT_US`
+	AUTO_INCREMENT = 1;
 ```
 
 ## About
