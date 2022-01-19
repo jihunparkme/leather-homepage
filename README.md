@@ -140,7 +140,7 @@ ALTER TABLE `PRODUCT`
 	DROP FOREIGN KEY `FK_PRODUCT_CATEGORY_TO_PRODUCT`; -- 상품 카테고리 -> 상품
 
 ALTER TABLE `PRODUCT`
-	DROP PRIMARY KEY; 
+	DROP PRIMARY KEY;
 
 DROP TABLE IF EXISTS `PRODUCT` RESTRICT;
 
@@ -178,11 +178,11 @@ ALTER TABLE `PRODUCT`
 		REFERENCES `PRODUCT_CATEGORY` ( -- 상품 카테고리
 			`category_id` -- 카테고리 ID
 		);
-		
-		
+
+
 '''
 상품 카테고리
-'''	
+'''
 ALTER TABLE `PRODUCT_CATEGORY`
 	DROP PRIMARY KEY; -- 상품 카테고리 기본키
 
@@ -206,8 +206,8 @@ ALTER TABLE `PRODUCT_CATEGORY`
 
 ALTER TABLE `PRODUCT_CATEGORY`
 	AUTO_INCREMENT = 1;
-	
-	
+
+
 '''
 상품 첨부 파일
 '''
@@ -338,6 +338,19 @@ ALTER TABLE `CONTACT_US`
 
 ALTER TABLE `CONTACT_US`
 	AUTO_INCREMENT = 1;
+```
+
+## 공지사항
+
+```sql
+Notice
+
+title
+contents
+hits
+작성자
+등록일
+수정일
 ```
 
 ## About
