@@ -43,12 +43,18 @@
 
 ---
 
+```sql
+CREATE SCHEMA `leather_homepage` DEFAULT CHARACTER SET utf8 COLLATE utf8_bin ;
+
+use leather_homepage
+```
+
 ## Member
 
-```mysql
-'''
+```sql
+/*
 사용자
-'''
+*/
 -- 사용자
 ALTER TABLE `MEMBER`
 	DROP PRIMARY KEY; -- 사용자 기본키
@@ -63,7 +69,7 @@ CREATE TABLE `MEMBER` (
 	`password`         VARCHAR(100) NOT NULL, -- 비밀번호
 	`name`             VARCHAR(30)  NOT NULL, -- 이름
 	`email`            VARCHAR(50)  NOT NULL, -- email
-	`auth`             VARCHAR(10)  NOT NULL DEFAULT MEMBER, -- 권한
+	`auth`             VARCHAR(10)  NOT NULL DEFAULT 'MEMBER', -- 권한
 	`create_date_time` DATETIME     NOT NULL, -- 등록일
 	`update_date_time` DATETIME     NULL      -- 수정일
 );
@@ -80,14 +86,14 @@ ALTER TABLE `MEMBER`
 
 ALTER TABLE `MEMBER`
 	AUTO_INCREMENT = 1;
-'''
+/*
 CREATE TABLE LOGIN_LOG (
     LOG_ID int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	USER_ID int(1) NOT NULL,
     USERNAME varchar(20) NOT NULL,
     LOGIN_DATE_TIME DATETIME NOT NULL default now()
 )
-'''
+*/
 ```
 
 - Login `POST`
@@ -135,10 +141,10 @@ public class UploadFile {
 }
 ```
 
-```mysql
-'''
+```sql
+/*
 상품
-'''
+*/
 -- 상품
 ALTER TABLE `PRODUCT`
 	DROP FOREIGN KEY `FK_PRODUCT_CATEGORY_TO_PRODUCT`; -- 상품 카테고리 -> 상품
@@ -159,9 +165,9 @@ CREATE TABLE `PRODUCT` (
 	`product_id`         INT          NOT NULL, -- 상품 ID
 	`category_id`        INT          NOT NULL, -- 카테고리 ID
 	`name`               VARCHAR(100) NOT NULL, -- 상품명
-	`contents`           VARCHAR(MAX) NULL,     -- 상품설명
+	`contents`           VARCHAR(20000) NULL,     -- 상품설명
 	`hits`               INT          NOT NULL DEFAULT 0, -- 조회수
-	`delete_yn`          CHAR(1)      NOT NULL DEFAULT N, -- 삭제여부
+	`delete_yn`          CHAR(1)      NOT NULL DEFAULT 'N', -- 삭제여부
 	`delete_date_time`   DATETIME     NULL,     -- 삭제일
 	`create_date_time`   DATETIME     NOT NULL, -- 등록일
 	`member_id`          INT          NOT NULL, -- 사용자 ID
@@ -202,9 +208,9 @@ ALTER TABLE `PRODUCT`
 			`member_id` -- 사용자 ID
 		);
 
-'''
+/*
 상품 카테고리
-'''
+*/
 -- 상품 카테고리
 ALTER TABLE `PRODUCT_CATEGORY`
 	DROP PRIMARY KEY; -- 상품 카테고리 기본키
@@ -217,7 +223,7 @@ CREATE TABLE `PRODUCT_CATEGORY` (
 	`category_id`     INT         NOT NULL, -- 카테고리 ID
 	`title`           VARCHAR(20) NOT NULL, -- 카테고리명
 	`order_no`        INT         NULL,     -- 우선순위
-	`category_use_yn` CHAR(1)     NULL     DEFAULT N -- 사용여부
+	`category_use_yn` CHAR(1)     NULL     DEFAULT 'N' -- 사용여부
 );
 
 -- 상품 카테고리
@@ -233,9 +239,9 @@ ALTER TABLE `PRODUCT_CATEGORY`
 ALTER TABLE `PRODUCT_CATEGORY`
 	AUTO_INCREMENT = 1;
 
-'''
+/*
 상품 첨부 파일
-'''
+*/
 -- 상품 첨부 파일
 ALTER TABLE `PRODUCT_UPLOAD_FILE`
 	DROP FOREIGN KEY `FK_PRODUCT_TO_PRODUCT_UPLOAD_FILE`; -- 상품 -> 상품 첨부 파일
@@ -253,7 +259,7 @@ CREATE TABLE `PRODUCT_UPLOAD_FILE` (
 	`product_id`       INT          NOT NULL, -- 상품 ID
 	`upload_file_name` VARCHAR(100) NOT NULL, -- 업로드 파일명
 	`store_file_name`  VARCHAR(100) NOT NULL, -- 저장 파일명
-	`thumbnail_yn`     char(1)      NOT NULL DEFAULT N, -- 썸네일 여부
+	`thumbnail_yn`     char(1)      NOT NULL DEFAULT 'N', -- 썸네일 여부
 	`create_date_time` DATETIME     NOT NULL, -- 등록일
 	`update_date_time` DATETIME     NULL      -- 수정일
 );
@@ -360,7 +366,7 @@ CREATE TABLE `CONTACT_US` (
 	`email`            VARCHAR(50)  NULL,     -- 이메일
 	`phone_number`     VARCHAR(20)  NOT NULL, -- 전화번호
 	`title`            VARCHAR(100) NOT NULL, -- 제목
-	`contents`         VARCHAR(MAX) NOT NULL, -- 내용
+	`contents`         VARCHAR(20000) NOT NULL, -- 내용
 	`create_date_time` DATETIME     NOT NULL, -- 등록일
 	`update_date_time` DATETIME     NULL      -- 수정일
 );
@@ -397,7 +403,7 @@ DROP TABLE IF EXISTS `Notice` RESTRICT;
 CREATE TABLE `Notice` (
 	`notice_id`        INT          NOT NULL, -- 공지사항 ID
 	`title`            VARCHAR(100) NOT NULL, -- 제목
-	`contents`         VARCHAR(MAX) NOT NULL, -- 내용
+	`contents`         VARCHAR(20000) NOT NULL, -- 내용
 	`hits`             INT          NOT NULL DEFAULT 0, -- 조회수
 	`member_id`        INT          NOT NULL, -- 사용자 ID
 	`create_date_time` DATETIME     NOT NULL, -- 등록일
