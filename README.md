@@ -49,11 +49,14 @@
 '''
 사용자
 '''
+-- 사용자
 ALTER TABLE `MEMBER`
-	DROP PRIMARY KEY;
+	DROP PRIMARY KEY; -- 사용자 기본키
 
+-- 사용자
 DROP TABLE IF EXISTS `MEMBER` RESTRICT;
 
+-- 사용자
 CREATE TABLE `MEMBER` (
 	`member_id`        INT          NOT NULL, -- 사용자 ID
 	`user_id`          VARCHAR(30)  NOT NULL, -- 아이디
@@ -65,6 +68,7 @@ CREATE TABLE `MEMBER` (
 	`update_date_time` DATETIME     NULL      -- 수정일
 );
 
+-- 사용자
 ALTER TABLE `MEMBER`
 	ADD CONSTRAINT `PK_MEMBER` -- 사용자 기본키
 		PRIMARY KEY (
@@ -76,7 +80,6 @@ ALTER TABLE `MEMBER`
 
 ALTER TABLE `MEMBER`
 	AUTO_INCREMENT = 1;
-
 '''
 CREATE TABLE LOGIN_LOG (
     LOG_ID int(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -136,28 +139,37 @@ public class UploadFile {
 '''
 상품
 '''
+-- 상품
 ALTER TABLE `PRODUCT`
 	DROP FOREIGN KEY `FK_PRODUCT_CATEGORY_TO_PRODUCT`; -- 상품 카테고리 -> 상품
 
+-- 상품
 ALTER TABLE `PRODUCT`
-	DROP PRIMARY KEY;
+	DROP FOREIGN KEY `FK_MEMBER_TO_PRODUCT`; -- 사용자 -> 상품
 
+-- 상품
+ALTER TABLE `PRODUCT`
+	DROP PRIMARY KEY; -- 상품 기본키
+
+-- 상품
 DROP TABLE IF EXISTS `PRODUCT` RESTRICT;
 
+-- 상품
 CREATE TABLE `PRODUCT` (
 	`product_id`         INT          NOT NULL, -- 상품 ID
 	`category_id`        INT          NOT NULL, -- 카테고리 ID
 	`name`               VARCHAR(100) NOT NULL, -- 상품명
 	`contents`           VARCHAR(MAX) NULL,     -- 상품설명
 	`hits`               INT          NOT NULL DEFAULT 0, -- 조회수
-	`delete_yn`          char(1)      NOT NULL DEFAULT N, -- 삭제여부
+	`delete_yn`          CHAR(1)      NOT NULL DEFAULT N, -- 삭제여부
 	`delete_date_time`   DATETIME     NULL,     -- 삭제일
 	`create_date_time`   DATETIME     NOT NULL, -- 등록일
-	`create_member_name` VARCHAR(30)  NOT NULL, -- 등록자
+	`member_id`          INT          NOT NULL, -- 사용자 ID
 	`update_date_time`   DATETIME     NULL,     -- 수정일
 	`update_member_name` VARCHAR(30)  NULL      -- 수정자
 );
 
+-- 상품
 ALTER TABLE `PRODUCT`
 	ADD CONSTRAINT `PK_PRODUCT` -- 상품 기본키
 		PRIMARY KEY (
@@ -170,6 +182,7 @@ ALTER TABLE `PRODUCT`
 ALTER TABLE `PRODUCT`
 	AUTO_INCREMENT = 1;
 
+-- 상품
 ALTER TABLE `PRODUCT`
 	ADD CONSTRAINT `FK_PRODUCT_CATEGORY_TO_PRODUCT` -- 상품 카테고리 -> 상품
 		FOREIGN KEY (
@@ -179,22 +192,35 @@ ALTER TABLE `PRODUCT`
 			`category_id` -- 카테고리 ID
 		);
 
+-- 상품
+ALTER TABLE `PRODUCT`
+	ADD CONSTRAINT `FK_MEMBER_TO_PRODUCT` -- 사용자 -> 상품
+		FOREIGN KEY (
+			`member_id` -- 사용자 ID
+		)
+		REFERENCES `MEMBER` ( -- 사용자
+			`member_id` -- 사용자 ID
+		);
 
 '''
 상품 카테고리
 '''
+-- 상품 카테고리
 ALTER TABLE `PRODUCT_CATEGORY`
 	DROP PRIMARY KEY; -- 상품 카테고리 기본키
 
+-- 상품 카테고리
 DROP TABLE IF EXISTS `PRODUCT_CATEGORY` RESTRICT;
 
+-- 상품 카테고리
 CREATE TABLE `PRODUCT_CATEGORY` (
-	`category_id`     INT                NOT NULL, -- 카테고리 ID
-	`title`           <데이터 타입 없음> NOT NULL, -- 카테고리명
-	`order_no`        <데이터 타입 없음> NULL,     -- 우선순위
-	`category_use_yn` <데이터 타입 없음> NULL     DEFAULT N -- 사용여부
+	`category_id`     INT         NOT NULL, -- 카테고리 ID
+	`title`           VARCHAR(20) NOT NULL, -- 카테고리명
+	`order_no`        INT         NULL,     -- 우선순위
+	`category_use_yn` CHAR(1)     NULL     DEFAULT N -- 사용여부
 );
 
+-- 상품 카테고리
 ALTER TABLE `PRODUCT_CATEGORY`
 	ADD CONSTRAINT `PK_PRODUCT_CATEGORY` -- 상품 카테고리 기본키
 		PRIMARY KEY (
@@ -207,18 +233,21 @@ ALTER TABLE `PRODUCT_CATEGORY`
 ALTER TABLE `PRODUCT_CATEGORY`
 	AUTO_INCREMENT = 1;
 
-
 '''
 상품 첨부 파일
 '''
+-- 상품 첨부 파일
 ALTER TABLE `PRODUCT_UPLOAD_FILE`
 	DROP FOREIGN KEY `FK_PRODUCT_TO_PRODUCT_UPLOAD_FILE`; -- 상품 -> 상품 첨부 파일
 
+-- 상품 첨부 파일
 ALTER TABLE `PRODUCT_UPLOAD_FILE`
 	DROP PRIMARY KEY; -- 상품 첨부 파일 기본키
 
+-- 상품 첨부 파일
 DROP TABLE IF EXISTS `PRODUCT_UPLOAD_FILE` RESTRICT;
 
+-- 상품 첨부 파일
 CREATE TABLE `PRODUCT_UPLOAD_FILE` (
 	`file_id`          INT          NOT NULL, -- 파일 ID
 	`product_id`       INT          NOT NULL, -- 상품 ID
@@ -229,6 +258,7 @@ CREATE TABLE `PRODUCT_UPLOAD_FILE` (
 	`update_date_time` DATETIME     NULL      -- 수정일
 );
 
+-- 상품 첨부 파일
 ALTER TABLE `PRODUCT_UPLOAD_FILE`
 	ADD CONSTRAINT `PK_PRODUCT_UPLOAD_FILE` -- 상품 첨부 파일 기본키
 		PRIMARY KEY (
@@ -241,6 +271,7 @@ ALTER TABLE `PRODUCT_UPLOAD_FILE`
 ALTER TABLE `PRODUCT_UPLOAD_FILE`
 	AUTO_INCREMENT = 1;
 
+-- 상품 첨부 파일
 ALTER TABLE `PRODUCT_UPLOAD_FILE`
 	ADD CONSTRAINT `FK_PRODUCT_TO_PRODUCT_UPLOAD_FILE` -- 상품 -> 상품 첨부 파일
 		FOREIGN KEY (
@@ -270,11 +301,14 @@ ALTER TABLE `PRODUCT_UPLOAD_FILE`
 - 후기
 
 ```sql
+-- 후기
 ALTER TABLE `GUEST_BOOK`
 	DROP PRIMARY KEY; -- 후기 기본키
 
+-- 후기
 DROP TABLE IF EXISTS `GUEST_BOOK` RESTRICT;
 
+-- 후기
 CREATE TABLE `GUEST_BOOK` (
 	`guest_book_id`    INT           NOT NULL, -- 후기 ID
 	`name`             VARCHAR(30)   NOT NULL, -- 이름
@@ -284,6 +318,7 @@ CREATE TABLE `GUEST_BOOK` (
 	`update_date_time` DATETIME      NULL      -- 수정일
 );
 
+-- 후기
 ALTER TABLE `GUEST_BOOK`
 	ADD CONSTRAINT `PK_GUEST_BOOK` -- 후기 기본키
 		PRIMARY KEY (
@@ -311,11 +346,14 @@ ALTER TABLE `GUEST_BOOK`
 문의가 접수되면 메일/카카오톡으로 안내.
 
 ```sql
+-- 문의하기
 ALTER TABLE `CONTACT_US`
 	DROP PRIMARY KEY; -- 문의하기 기본키
 
+-- 문의하기
 DROP TABLE IF EXISTS `CONTACT_US` RESTRICT;
 
+-- 문의하기
 CREATE TABLE `CONTACT_US` (
 	`contact_us_id`    INT          NOT NULL, -- 문의하기 ID
 	`name`             VARCHAR(30)  NOT NULL, -- 이름
@@ -327,6 +365,7 @@ CREATE TABLE `CONTACT_US` (
 	`update_date_time` DATETIME     NULL      -- 수정일
 );
 
+-- 문의하기
 ALTER TABLE `CONTACT_US`
 	ADD CONSTRAINT `PK_CONTACT_US` -- 문의하기 기본키
 		PRIMARY KEY (
@@ -340,17 +379,53 @@ ALTER TABLE `CONTACT_US`
 	AUTO_INCREMENT = 1;
 ```
 
-## 공지사항
+## Notice
 
 ```sql
-Notice
+-- 공지사항
+ALTER TABLE `Notice`
+	DROP FOREIGN KEY `FK_MEMBER_TO_Notice`; -- 사용자 -> 공지사항
 
-title
-contents
-hits
-작성자
-등록일
-수정일
+-- 공지사항
+ALTER TABLE `Notice`
+	DROP PRIMARY KEY; -- 공지사항 기본키
+
+-- 공지사항
+DROP TABLE IF EXISTS `Notice` RESTRICT;
+
+-- 공지사항
+CREATE TABLE `Notice` (
+	`notice_id`        INT          NOT NULL, -- 공지사항 ID
+	`title`            VARCHAR(100) NOT NULL, -- 제목
+	`contents`         VARCHAR(MAX) NOT NULL, -- 내용
+	`hits`             INT          NOT NULL DEFAULT 0, -- 조회수
+	`member_id`        INT          NOT NULL, -- 사용자 ID
+	`create_date_time` DATETIME     NOT NULL, -- 등록일
+	`update_date_time` DATETIME     NULL      -- 수정일
+);
+
+-- 공지사항
+ALTER TABLE `Notice`
+	ADD CONSTRAINT `PK_Notice` -- 공지사항 기본키
+		PRIMARY KEY (
+			`notice_id` -- 공지사항 ID
+		);
+
+ALTER TABLE `Notice`
+	MODIFY COLUMN `notice_id` INT NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `Notice`
+	AUTO_INCREMENT = 1;
+
+-- 공지사항
+ALTER TABLE `Notice`
+	ADD CONSTRAINT `FK_MEMBER_TO_Notice` -- 사용자 -> 공지사항
+		FOREIGN KEY (
+			`member_id` -- 사용자 ID
+		)
+		REFERENCES `MEMBER` ( -- 사용자
+			`member_id` -- 사용자 ID
+		);
 ```
 
 ## About
